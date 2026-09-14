@@ -35,29 +35,52 @@ function updateActivity(data) {
   clearTimer = setTimeout(clearActivity, IDLE_TIMEOUT_MS);
 
   const now = Date.now();
+  const isLive = Boolean(data.isLive);
   const startTimestamp = now - Math.floor((data.currentTime || 0) * 1000);
-  const endTimestamp = data.duration
+  const endTimestamp = (!isLive && data.duration > 0)
     ? startTimestamp + Math.floor(data.duration * 1000)
     : undefined;
 
-  rpc.user
-    ?.setActivity({
-      details: data.title || "Assistindo na Prime Video",
-      state: data.paused ? "Pausado" : "Assistindo",
-      startTimestamp: data.paused ? undefined : startTimestamp,
-      endTimestamp: data.paused ? undefined : endTimestamp,
-      largeImageKey: "prime_video",
-      largeImageText: "Amazon Prime Video",
-      instance: false,
-    })
-    .catch((err) => console.error("[server] erro ao atualizar presence:", err.message));
+  let stateText = "";
+  if (isLive) {
+    stateText = data.paused ? "Ao Vivo (Pausado)" : "Ao Vivo";
+  } else if (data.subtitle) {
+    stateText = data.paused ? `${data.subtitle} (Pausado)` : data.subtitle;
+  } else {
+    stateText = data.paused ? "Pausado" : "Assistindo";
+  }
+
+  const activity = {
+    details: data.title || "Assistindo na Prime Video",
+    state: stateText,
+    startTimestamp: data.paused ? undefined : startTimestamp,
+    endTimestamp: data.paused ? undefined : endTimestamp,
+    largeImageKey: "prime_video",
+    largeImageText: "Amazon Prime Video",
+    smallImageKey: data.paused ? "pause" : "play",
+    smallImageText: data.paused ? "Pausado" : "Reproduzindo",
+    instance: false,
+  };
+
+  if (data.url && data.url.startsWith("http")) {
+    activity.buttons = [
+      {
+        label: "Assistir na Prime Video",
+        url: data.url,
+      },
+    ];
+  }
+
+  rpc.user?.setActivity(activity).catch((err) => {
+    console.error("[server] erro ao atualizar presence:", err.message);
+  });
 }
 
 const wss = new WebSocketServer({ port: PORT });
-console.log(`[server] aguardando a extensão em ws://localhost:${PORT}`);
+console.log(`[server] aguardando a extensÃ£o em ws://localhost:${PORT}`);
 
 wss.on("connection", (socket) => {
-  console.log("[server] extensão conectada");
+  console.log("[server] extensÃ£o conectada");
 
   socket.on("message", (raw) => {
     let data;
@@ -70,7 +93,7 @@ wss.on("connection", (socket) => {
   });
 
   socket.on("close", () => {
-    console.log("[server] extensão desconectada");
+    console.log("[server] extensÃ£o desconectada");
     clearTimeout(clearTimer);
     clearActivity();
   });
