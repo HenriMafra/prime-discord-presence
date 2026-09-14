@@ -1,0 +1,26 @@
+{
+  "name": "prime-discord-presence",
+  "version": "1.0.0",
+  "description": "Rich Presence do Discord para Amazon Prime Video via extensão de Firefox.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielaias/prime-discord-presence.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gabrielaias/prime-discord-presence/issues"
+  },
+  "homepage": "https://github.com/gabrielaias/prime-discord-presence#readme",
+  "dependencies": {
+    "@xhayper/discord-rpc": "^1.3.4",
+    "dotenv": "^17.4.2",
+    "ws": "^8.21.3"
+  }
+}
