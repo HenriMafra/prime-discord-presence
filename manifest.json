@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Prime Video Discord Presence (Local)",
+  "version": "1.0",
+  "description": "Envia o que você está assistindo na Prime Video para um servidor local, que atualiza seu status do Discord.",
+  "permissions": ["scripting"],
+  "host_permissions": [
+    "*://*.primevideo.com/*",
+    "*://*.amazon.com/*"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.primevideo.com/*",
+        "*://*.amazon.com/gp/video/*",
+        "*://*.amazon.com/*/dp/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "prime-discord-presence@local"
+    }
+  }
+}
